@@ -8,11 +8,15 @@ use Warden::Manager do |manager|
 end
 
 app = URack::App.new
-run app
 
-# run Usher::Interface.for(:rack) do
-  # get('/jola').to(app)
-  # add('/hello/:controller').to(app)
-  # default FrontController.new
-  # add('/').to(app)
-# end
+if false
+  run Usher::Interface.for(:rack) do
+    # get('/jola').to(app)
+    get('/').to(lambda { |env| [200, {}, ["Hi mate!"]] })
+    # add('/hello/:controller').to(app)
+    # add('/').to(app)
+    # default ExceptionsController.action(:not_found)
+  end
+else
+  run app
+end

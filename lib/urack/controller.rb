@@ -21,8 +21,9 @@ module URack
     def call(env)
       @env = env
       action = env['x-rack.urack-action'] or raise RuntimeError.new("No action specified!")
-      body = self.send(action)
-      [@status || 200, { "Content-type" => "text/html" }.merge!(headers), [body]]
+      @response = Rack::Response.new
+      @response.write(self.send(action))
+      @response.finish
     end
     
     # helpers
@@ -41,12 +42,13 @@ module URack
     end
     
     def status(code)
-      @status = code
+      @response.status = code
     end
     
     def headers
-      @headers ||= {}
+      @response.header
     end
+    alias :header :headers
     
     def redirect_back_or(url, opts={})
       ignore = opts[:ignore]
