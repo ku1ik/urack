@@ -1,0 +1,10 @@
+<html>
+<head>
+</head>
+<body>
+  <h1>Heading</h1>
+    <div>Identified as <%= current_user.try(:name) || 'guest' %></div>
+    <div><%= flash[:notice] %></div>
+    <%= yield %>
+  </body>
+</html>
