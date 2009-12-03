@@ -69,8 +69,8 @@ module URack
       request.env['warden'].user
     end
     
-    def logout!
-      request.env['warden'].logout
+    def logout!(scope=:default)
+      request.env['warden'].logout(scope)
     end
     
     def cookies

@@ -6,8 +6,8 @@ class SessionController < URack::Controller
   end
   
   def logout
-    # flash[:notice] = "Logged out :("
     logout!
+    flash[:notice] = "Logged out :("
     redirect_back_or "/"
   end
 end
