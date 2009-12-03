@@ -41,6 +41,12 @@ module URack
       end
     end
     
+    def partial(template, opts={})
+      template_path = "#{URack.root}/app/views/#{self.class.name}/_#{template}.html.erb"
+      locals = { template.to_sym => opts.delete(:with) }.merge!(opts)
+      Tilt.new(template_path).render(self, locals)
+    end
+    
     def status(code)
       @response.status = code
     end

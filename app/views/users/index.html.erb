@@ -1,3 +1,5 @@
 <h2>Users list</h2>
 
-Jola, Misio...
+<% @users.each do |user| %>
+  <%= partial :user, :with => user, :comments => true %>
+<% end %>
