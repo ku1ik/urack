@@ -3,4 +3,8 @@ class UsersController < URack::Controller
     @users = %w(jola misio siekacz)
     render
   end
+  
+  def edit
+    render "edit ;)"
+  end
 end
