@@ -10,30 +10,23 @@ use Warden::Manager do |manager|
   manager.failure_app = ExceptionsController.action(:unauthenticated)
 end
 
-app = URack::App.new
-
 usher_app = Usher::Interface.for(:rack) do
   # root
-  get('/').to(app)
-  
+  get('/').to(FrontController.action(:index))
   # index
-  get('/:controller(/)').to(app)
-
+  get('/:controller(/)').to(lambda { |env| URack::App.new(env['usher.params'], :index).call(env) })
+  # show
+  get('/:controller/{:id,\d+}(/)').to(lambda { |env| URack::App.new(env['usher.params'], :show).call(env) })
   # new
-  get('/:controller/new(/)').to(app)
-  
+  get('/:controller/new(/)').to(lambda { |env| URack::App.new(env['usher.params'], :new).call(env) })
   # create
-  post('/:controller(/)').to(app)
-  
-  # edit
-  get('/:controller/{:id,\d+}/:action(/)').to(app)
-  
+  post('/:controller(/)').to(lambda { |env| URack::App.new(env['usher.params'], :create).call(env) })
+  # member action
+  get('/:controller/{:id,\d+}/:action(/)').to(lambda { |env| URack::App.new(env['usher.params']).call(env) })
   # update
-  put('/:controller/{:id,\d+}(/)').to(app)
-  
+  put('/:controller/{:id,\d+}(/)').to(lambda { |env| URack::App.new(env['usher.params'], :update).call(env) })
   # destroy
-  delete('/:controller/{:id,\d+}(/)').to(app)
-
+  delete('/:controller/{:id,\d+}(/)').to(lambda { |env| URack::App.new(env['usher.params'], :destroy).call(env) })
   # 404
   default ExceptionsController.action(:not_found)
 end
