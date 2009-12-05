@@ -1,6 +1,7 @@
-require File.join(File.dirname(__FILE__), "config/init.rb")
+require File.join(File.dirname(__FILE__), "vendor/gems/environment.rb")
+require File.join(File.dirname(__FILE__), "lib/urack/urack.rb")
 
-eval File.read(File.join(File.dirname(__FILE__), "lib/urack/middlewares.rb"))
+URack.root = ::File.expand_path(::File.dirname(__FILE__))
+URack::Bootloader.run(self.send(:binding))
 
-run URack::App.new(:root_app => FrontController.action(:index), 
-                   :not_found_app => ExceptionsController.action(:not_found))
+run URack.router
