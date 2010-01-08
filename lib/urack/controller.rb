@@ -32,12 +32,14 @@ module URack
       @request ||= Rack::Request.new(@env)
     end
     
-    def render(template=nil)
-      template = request.env['x-rack.urack-action'] if template.nil?
+    def render(text=nil)
       layout_path = "#{URack.root}/app/views/layouts/application.html.erb"
-      template_path = "#{URack.root}/app/views/#{self.class.name}/#{template}.html.erb"
+      if text.nil?
+        template_path = "#{URack.root}/app/views/#{self.class.name}/#{request.env['x-rack.urack-action']}.html.erb"
+        text = Tilt.new(template_path).render(self)
+      end
       Tilt.new(layout_path).render(self) do
-        template.is_a?(String) ? template : Tilt.new(template_path).render(self)
+        text
       end
     end
     
