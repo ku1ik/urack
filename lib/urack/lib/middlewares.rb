@@ -4,5 +4,5 @@ use Rack::Flash
 use Rack::NestedParams
 use Warden::Manager do |manager|
   manager.default_strategies :password
-  manager.failure_app = ExceptionsController.action(:unauthenticated)
+  manager.failure_app = URack.exceptions_controller.action(:unauthenticated)
 end

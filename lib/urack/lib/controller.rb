@@ -16,6 +16,18 @@ module URack
       to_s.snake_case.gsub('_controller', '')
     end
 
+    def self.templates_path(path)
+      self.class_eval do
+        @templates_dir = path
+      end
+    end
+    
+    def self.get_templates_dir
+      self.class_eval do
+        @templates_dir || "#{URack.root}/app/views/#{name}"
+      end
+    end
+    
     # rack endpoint
     
     def call(env)
@@ -28,6 +40,15 @@ module URack
     
     # helpers
     
+    def url(name, opts={})
+      URack.router.generate(name, opts)
+    end
+    
+    def link_to(label, url=nil)
+      url ||= label
+      %(<a href="#{url}">#{label}</a>)
+    end
+    
     def request
       @request ||= Rack::Request.new(@env)
     end
@@ -35,7 +56,8 @@ module URack
     def render(text=nil)
       layout_path = "#{URack.root}/app/views/layouts/application.html.erb"
       if text.nil?
-        template_path = "#{URack.root}/app/views/#{self.class.name}/#{request.env['x-rack.urack-action']}.html.erb"
+        template = request.env['x-rack.urack-action']
+        template_path = "#{self.class.get_templates_dir}/#{template}.html.erb"
         text = Tilt.new(template_path).render(self)
       end
       Tilt.new(layout_path).render(self) do
@@ -44,7 +66,7 @@ module URack
     end
     
     def partial(template, opts={})
-      template_path = "#{URack.root}/app/views/#{self.class.name}/_#{template}.html.erb"
+      template_path = "#{self.class.get_templates_dir}/_#{template}.html.erb"
       locals = { template.to_sym => opts.delete(:with) }.merge!(opts)
       Tilt.new(template_path).render(self, locals)
     end
